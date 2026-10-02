@@ -32,6 +32,10 @@ enum class MiniPlayerBackgroundStyle {
 
 val DensityScaleKey = floatPreferencesKey("density_scale_factor")
 
+// Car head unit build: start at ~2x (175% x 1.15 landscape scaling) on a fresh install.
+const val DefaultEnableLandscapeScaling = true
+const val DefaultDensityScale = 1.75f
+
 enum class DensityScale(
     val value: Float,
     val label: String,

@@ -57,6 +57,8 @@ import com.metrolist.music.constants.CropAlbumArtKey
 import com.metrolist.music.constants.DefaultOpenTabKey
 import com.metrolist.music.constants.DensityScale
 import com.metrolist.music.constants.DensityScaleKey
+import com.metrolist.music.constants.DefaultDensityScale
+import com.metrolist.music.constants.DefaultEnableLandscapeScaling
 import com.metrolist.music.constants.DynamicThemeKey
 import com.metrolist.music.constants.EnableDynamicIconKey
 import com.metrolist.music.constants.EnableHighRefreshRateKey
@@ -147,7 +149,7 @@ fun AppearanceSettings(
     val (enableLandscapeScaling, onEnableLandscapeScalingChange) =
         rememberPreference(
             EnableLandscapeScalingKey,
-            defaultValue = false,
+            defaultValue = DefaultEnableLandscapeScaling,
         )
     val (selectedThemeColorInt) =
         rememberPreference(
@@ -262,7 +264,8 @@ fun AppearanceSettings(
     val (gridItemSize, onGridItemSizeChange) =
         rememberEnumPreference(
             GridItemsSizeKey,
-            defaultValue = GridItemSize.SMALL,
+            // Matches the default used by the screens that render the grid.
+            defaultValue = GridItemSize.BIG,
         )
 
     val (slimNav, onSlimNavChange) =
@@ -271,7 +274,7 @@ fun AppearanceSettings(
             defaultValue = false,
         )
 
-    val (densityScale, onDensityScaleChange) = rememberPreference(DensityScaleKey, defaultValue = 1f)
+    val (densityScale, onDensityScaleChange) = rememberPreference(DensityScaleKey, defaultValue = DefaultDensityScale)
     var showDensityScaleDialog by rememberSaveable { mutableStateOf(false) }
 
     val (listenTogetherInTopBar, onListenTogetherInTopBarChange) =

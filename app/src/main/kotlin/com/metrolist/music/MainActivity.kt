@@ -98,6 +98,7 @@ import android.util.Log
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.layout.boundsInWindow
+import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalWindowInfo
@@ -146,6 +147,8 @@ import com.metrolist.music.constants.DefaultOpenTabKey
 import com.metrolist.music.constants.DismissedKmpUpdateKey
 import com.metrolist.music.constants.DismissedStandaloneUpdateKey
 import com.metrolist.music.constants.DensityScaleKey
+import com.metrolist.music.constants.DefaultDensityScale
+import com.metrolist.music.constants.DefaultEnableLandscapeScaling
 import com.metrolist.music.constants.DisableScreenshotKey
 import com.metrolist.music.constants.DynamicThemeKey
 import com.metrolist.music.constants.EnableHighRefreshRateKey
@@ -616,8 +619,8 @@ class MainActivity : FragmentActivity() {
             setSystemBarAppearance(useDarkTheme)
         }
 
-        val enableLandscapeScaling by rememberPreference(EnableLandscapeScalingKey, defaultValue = false)
-        val userDensityScale by rememberPreference(DensityScaleKey, defaultValue = 1f)
+        val enableLandscapeScaling by rememberPreference(EnableLandscapeScalingKey, defaultValue = DefaultEnableLandscapeScaling)
+        val userDensityScale by rememberPreference(DensityScaleKey, defaultValue = DefaultDensityScale)
         val pureBlackEnabled by rememberPreference(PureBlackKey, defaultValue = false)
         val pureBlack =
             remember(pureBlackEnabled, useDarkTheme) {
@@ -1091,6 +1094,14 @@ class MainActivity : FragmentActivity() {
                                             Text(
                                                 text = currentTitleRes?.let { stringResource(it) } ?: "",
                                                 style = MaterialTheme.typography.titleLarge,
+                                                modifier =
+                                                    Modifier.onGloballyPositioned { c ->
+                                                        Log.i(
+                                                            "CarBar",
+                                                            "title pos=${c.positionInWindow()} size=${c.size} " +
+                                                                "visible=${c.boundsInWindow()}",
+                                                        )
+                                                    },
                                             )
                                         },
                                         actions = {
@@ -1368,7 +1379,11 @@ class MainActivity : FragmentActivity() {
                                     onHomeLongHold = { showAccountDialog = true },
                                 )
                             }
-                            Box(Modifier.weight(1f)) {
+                            Box(
+                                Modifier.weight(1f).onGloballyPositioned { c ->
+                                    Log.i("CarBar", "navHostBox bounds=${c.boundsInWindow()} size=${c.size}")
+                                },
+                            ) {
                                 // NavHost with animations (Material 3 Expressive style)
                                 NavHost(
                                     navController = navController,
