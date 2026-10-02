@@ -3,6 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- ECARX head-unit MediaCenter: lets steering-wheel media keys drive playback.
+         protectionLevel="system|signature" — granted only when installed as a
+         system/privileged app (/system/priv-app). Ignored on non-ECARX devices. -->
+    <uses-permission android:name="ecarx.oem.permission.OPENAPI_MEDIACENTER_PERMISSION"
+        tools:ignore="ProtectedPermissions" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />

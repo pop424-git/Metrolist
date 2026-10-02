@@ -402,6 +402,7 @@ class MusicService :
     private var isRunning = false
     private var mediaSession: MediaLibrarySession? = null
     private var controllerFuture: com.google.common.util.concurrent.ListenableFuture<MediaController>? = null
+    private var ecarxBridge: com.metrolist.music.playback.ecarx.EcarxMediaBridge? = null
 
     private val playerInitialized = MutableStateFlow(false)
     val isPlayerReady: kotlinx.coroutines.flow.StateFlow<Boolean> = playerInitialized.asStateFlow()
@@ -1274,6 +1275,11 @@ class MusicService :
                 }
             }
         }
+
+        // Register with the ECARX head-unit MediaCenter so steering-wheel media
+        // keys drive playback. No-op on non-ECARX devices / non-system installs.
+        ecarxBridge = com.metrolist.music.playback.ecarx.EcarxMediaBridge(this, player)
+            .also { it.connect() }
     }
 
     private fun createExoPlayer(prefs: Preferences? = null): ExoPlayer {
@@ -2503,6 +2509,7 @@ class MusicService :
             }
         }
         lastTransitionedMediaId = mediaItem?.mediaId
+        ecarxBridge?.onPlaybackChanged()
         initialBufferRecoveryJob?.cancel()
         initialBufferRecoveryJob = null
         initialBufferRecoveryAttemptedMediaId = null
@@ -2591,10 +2598,15 @@ class MusicService :
         }
     }
 
+    override fun onIsPlayingChanged(isPlaying: Boolean) {
+        ecarxBridge?.onPlaybackChanged()
+    }
+
     override fun onPlaybackStateChanged(
         @Player.State playbackState: Int,
     ) {
         updateInitialBufferRecovery(playbackState)
+        ecarxBridge?.onPlaybackChanged()
 
         if (playbackState == Player.STATE_ENDED) {
             player.currentMediaItem?.mediaId?.let { mediaId ->
@@ -4235,6 +4247,8 @@ class MusicService :
 
     override fun onDestroy() {
         isRunning = false
+        ecarxBridge?.release()
+        ecarxBridge = null
 
         if (!::player.isInitialized) {
             try {
