@@ -661,7 +661,7 @@ fun AppearanceSettings(
                 }
             },
         ) {
-            Column {
+            Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                 DensityScale.entries.forEach { scale ->
                     Row(
                         modifier =

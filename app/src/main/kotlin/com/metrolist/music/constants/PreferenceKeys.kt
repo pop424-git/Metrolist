@@ -36,6 +36,10 @@ enum class DensityScale(
     val value: Float,
     val label: String,
 ) {
+    // Car head unit: large landscape display needs much bigger UI.
+    HUGE(2.0f, "Huge (200%)"),
+    EXTRA_LARGE(1.75f, "Extra Large (175%)"),
+    LARGE(1.5f, "Large (150%)"),
     NATIVE(1.0f, "Native (100%)"),
     SLIGHTLY_COMPACT(0.85f, "Slightly Compact (85%)"),
     COMPACT(0.75f, "Compact (75%)"),
