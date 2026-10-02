@@ -7,6 +7,8 @@ name: Build Car APK
 
 on:
   workflow_dispatch:
+  push:
+    branches: ["car-scale"]
 
 permissions:
   contents: read
