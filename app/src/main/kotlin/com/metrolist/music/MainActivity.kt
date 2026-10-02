@@ -148,6 +148,7 @@ import com.metrolist.music.constants.DismissedKmpUpdateKey
 import com.metrolist.music.constants.DismissedStandaloneUpdateKey
 import com.metrolist.music.constants.DensityScaleKey
 import com.metrolist.music.constants.DefaultDensityScale
+import com.metrolist.music.constants.CarTopOverlayPx
 import com.metrolist.music.constants.DefaultEnableLandscapeScaling
 import com.metrolist.music.constants.DisableScreenshotKey
 import com.metrolist.music.constants.DynamicThemeKey
@@ -885,6 +886,7 @@ class MainActivity : FragmentActivity() {
                         windowsInsets
                             .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
                             .add(WindowInsets(top = AppBarHeight, bottom = bottom))
+                            .add(WindowInsets(top = CarTopOverlayPx))
                     }
                 appBarScrollBehavior(
                     canScroll = {
@@ -1153,6 +1155,8 @@ class MainActivity : FragmentActivity() {
                                             }
                                         },
                                         scrollBehavior = topAppBarScrollBehavior,
+                                        windowInsets =
+                                            TopAppBarDefaults.windowInsets.add(WindowInsets(top = CarTopOverlayPx)),
                                         colors =
                                             TopAppBarDefaults.topAppBarColors(
                                                 containerColor = if (pureBlack) Color.Black else MaterialTheme.colorScheme.surfaceContainer,

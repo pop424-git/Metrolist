@@ -36,6 +36,12 @@ val DensityScaleKey = floatPreferencesKey("density_scale_factor")
 const val DefaultEnableLandscapeScaling = true
 const val DefaultDensityScale = 1.75f
 
+// WORKAROUND(car-scale): on the Geely EX5 head unit an unidentified full-width
+// 64px layer is drawn over the area right below the status bar on the main
+// screens, hiding the top half of the top app bar. Push the bar and the content
+// below it down by that amount until the real source is found.
+const val CarTopOverlayPx = 64
+
 enum class DensityScale(
     val value: Float,
     val label: String,
