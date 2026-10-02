@@ -94,6 +94,11 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
+import android.util.Log
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.layout.boundsInWindow
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.painterResource
@@ -893,6 +898,26 @@ class MainActivity : FragmentActivity() {
                         },
                     )
 
+                // DEBUG(car-scale): diagnose clipped top app bar on the car head unit.
+                val dbgDensity = LocalDensity.current
+                val dbgStatusTop = WindowInsets.statusBars.getTop(dbgDensity)
+                val dbgSystemTop = WindowInsets.systemBars.getTop(dbgDensity)
+                val dbgBarInsetsTop = TopAppBarDefaults.windowInsets.getTop(dbgDensity)
+                LaunchedEffect(dbgStatusTop, dbgSystemTop, dbgBarInsetsTop, dbgDensity) {
+                    Log.i(
+                        "CarBar",
+                        "density=${dbgDensity.density} fontScale=${dbgDensity.fontScale} " +
+                            "statusTop=$dbgStatusTop systemTop=$dbgSystemTop barInsetsTop=$dbgBarInsetsTop",
+                    )
+                }
+                LaunchedEffect(topAppBarScrollBehavior) {
+                    snapshotFlow {
+                        topAppBarScrollBehavior.state.heightOffset to topAppBarScrollBehavior.state.heightOffsetLimit
+                    }.collect { (offset, limit) ->
+                        Log.i("CarBar", "heightOffset=$offset limit=$limit")
+                    }
+                }
+
                 // Navigation tracking
                 LaunchedEffect(navBackStackEntry) {
                     if (inSearchScreen) {
@@ -1126,14 +1151,17 @@ class MainActivity : FragmentActivity() {
                                                 navigationIconContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
                                             ),
                                         modifier =
-                                            Modifier.windowInsetsPadding(
-                                                if (showRail) {
-                                                    WindowInsets(left = NavigationBarHeight)
-                                                        .add(cutoutInsets.only(WindowInsetsSides.Start))
-                                                } else {
-                                                    cutoutInsets.only(WindowInsetsSides.Start + WindowInsetsSides.End)
-                                                },
-                                            ),
+                                            Modifier
+                                                .onGloballyPositioned { c ->
+                                                    Log.i("CarBar", "topAppBar bounds=${c.boundsInWindow()} size=${c.size}")
+                                                }.windowInsetsPadding(
+                                                    if (showRail) {
+                                                        WindowInsets(left = NavigationBarHeight)
+                                                            .add(cutoutInsets.only(WindowInsetsSides.Start))
+                                                    } else {
+                                                        cutoutInsets.only(WindowInsetsSides.Start + WindowInsetsSides.End)
+                                                    },
+                                                ),
                                     )
                                 }
                             }
